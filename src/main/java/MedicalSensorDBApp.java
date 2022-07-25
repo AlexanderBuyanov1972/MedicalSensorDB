@@ -21,11 +21,12 @@ import java.util.function.Consumer;
 @SpringBootApplication
 public class MedicalSensorDBApp{
     ObjectMapper mapper = new ObjectMapper();
+    Instant current = null;
     @Autowired
     private SensorsRepository repository;
     List<Sensor> listSensors = new LinkedList<>();
     List<Sensor> sendList = new LinkedList<>();
-    Instant current = null;
+
 
     @Value("${period:20}")
     int period;
@@ -43,7 +44,7 @@ public class MedicalSensorDBApp{
                 current = Instant.now();
             } else {
                 long currentPeriod = ChronoUnit.SECONDS.between(current, Instant.now());
-                if (currentPeriod > period) {
+                if (currentPeriod >= period) {
                     repository.saveAll(getListSensorsAVG(listSensors));
                     listSensors.clear();
                     sendList.clear();
